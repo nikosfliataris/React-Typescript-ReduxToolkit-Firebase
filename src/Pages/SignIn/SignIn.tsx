@@ -1,7 +1,8 @@
 import React, { FC, useState } from "react";
 import Form from "./../../Components/FormInput/FormInput";
-import { NavigateOptions, To, useNavigate } from "react-router-dom";
-import { auth } from "../../Components/Firebase/firebase";
+import Button from "./../../Components/FormButton/FormButton";
+import { useNavigate } from "react-router-dom";
+import { auth, signInWithGoogle } from "../../Components/Firebase/firebase";
 import { useAppDispatch } from "../../Redux/app/hooks";
 import "./SignIn.scss";
 
@@ -54,18 +55,37 @@ const SignIn: FC = () => {
           otherProps={[]}
         />
         <div className="buttons">
-          {/* <CustomButton type="submit">Sign In</CustomButton>
-          <CustomButton onClick={signInWithGoogle} isGoogleSignIn>
+          <Button
+            isGoogleSignIn={false}
+            inverted={false}
+            otherprops={[]}
+            type={"submit"}
+          >
+            Sign In
+          </Button>
+          <Button
+            onClick={signInWithGoogle}
+            isGoogleSignIn={true}
+            inverted={false}
+            otherprops={[]}
+            type={"submit"}
+          >
             Sign In With Google
-          </CustomButton> */}
+          </Button>
         </div>
       </form>
       <div className="registration-button">
         <h2>You Don't have an account </h2>
         <div className="button-path">
-          {/* <CustomButton type="submit" onClick={handleRegister}>
+          <Button
+            onClick={handleRegister}
+            isGoogleSignIn={false}
+            inverted={false}
+            otherprops={[]}
+            type={"submit"}
+          >
             Register
-          </CustomButton> */}
+          </Button>
         </div>
       </div>
     </div>

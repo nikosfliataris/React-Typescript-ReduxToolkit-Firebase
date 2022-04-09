@@ -14,8 +14,15 @@ const firebaseConfig = {
 };
 
 export const createUserProfileDocument = async (
-  UserAuth: { uid?: string; displayName?: string; email?: string },
-  additionalData: any[]
+  UserAuth: {
+    uid?: string | null;
+    displayName?: string | null | any[];
+    email?: string | null;
+  } | null,
+  additionalData?: {
+    displayName?: string | null | any[];
+    address?: string | null | any[];
+  }
 ) => {
   if (!UserAuth) return;
   const userRef = firestore.doc(`users/${UserAuth.uid}`);
@@ -64,10 +71,6 @@ export const convertCollection = (collections: { docs: any[] }) => {
     };
   });
   return transform;
-  // .reduce((accumulator, collection) => {
-  //   accumulator[collection.title.toLowerCase()] = collection;
-  //   return accumulator;
-  // }, {});
 };
 
 firebase.initializeApp(firebaseConfig);
