@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./PaymentDetails.scss";
 import Form from "./../FormInput/FormInput";
 import Button from "./../FormButton/FormButton";
@@ -7,13 +7,15 @@ import { useNavigate } from "react-router-dom";
 import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
 import { SignInUser } from "../../Redux/features/User/UserSlice";
 import instance from "./../../Axios";
-import { AddItem } from "../../Redux/features/Cart/CartSlice";
-import CartItemComponent from "../CartItemComponent/CartItemComponent";
-import { setOrders } from "../../Redux/features/Orders/OrderSlice";
+import { AddItem, clearStorage } from "../../Redux/features/Cart/CartSlice";
+
 type Props = {};
 type ClientSecret = {
   clientSecret: string;
   data: string;
+};
+type CardProps = {
+  card: any;
 };
 function PaymentDetails({}: Props) {
   const stripe = useStripe();
@@ -24,7 +26,10 @@ function PaymentDetails({}: Props) {
   const [clientSecret, setClientSecret] = useState("");
   const cart = useAppSelector(AddItem);
   console.log(clientSecret);
-
+  const [succeeded, setSucceeded] = useState(false);
+  const [processing, setProcessing] = useState(true);
+  const [error, setError] = useState(null);
+  const [disabled, setDisabled] = useState(true);
   const date = new Date();
   const history = useNavigate();
   const dispatch = useAppDispatch();
@@ -36,48 +41,39 @@ function PaymentDetails({}: Props) {
       0
     )
   );
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const cardElement = elements?.getElement(CardElement);
-    instance
-      .post("/payment/create", {
-        ammount: Total_Price * 100,
-        fullname,
-        address,
-        email,
-      })
-      .then(({ data: clientSecret }) => {
-        if (cardElement) {
-          stripe
-            ?.createPaymentMethod({
-              type: "card",
-              card: cardElement,
-            })
-            .then(({ paymentMethod }) => {
-              stripe
-                .confirmCardPayment(clientSecret, {
-                  payment_method: paymentMethod?.id,
-                })
-                .then(({ paymentIntent }) => {
-                  const configOrder = {
-                    orderTotal: Total_Price,
-                    orderItems: cart.map((item) => {
-                      return (
-                        item.imageUrl,
-                        item.name,
-                        item.price,
-                        item.quantity,
-                        item.id,
-                        item.id
-                      );
-                    }),
-                  };
-                  dispatch(setOrders(configOrder));
-                });
-            });
-        }
+  useEffect(() => {
+    const getClientSecret = async () => {
+      const response = await instance({
+        method: "post",
+        url: `/payment/create?total=${Total_Price * 100}`,
       });
+      setClientSecret(response.data.clientSecret);
+      console.log(clientSecret);
+    };
+    getClientSecret();
+  }, []);
+
+  const cardElement = elements?.getElement("card");
+  console.log(cardElement);
+
+  const handleSubmit = async (e: React.SyntheticEvent) => {
+    e.preventDefault();
+    setProcessing(true);
+    if (cardElement) {
+      const payload = await stripe
+        ?.confirmCardPayment(clientSecret, {
+          payment_method: { card: cardElement },
+        })
+        .then(({ paymentIntent }) => {
+          setSucceeded(true);
+          setError(null);
+          setProcessing(false);
+        });
+    }
+    dispatch(clearStorage(localStorage.clear()));
+    history("/");
   };
+
   return (
     <div className="paymentdetails">
       <form className="payment-form" onSubmit={handleSubmit}>

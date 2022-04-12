@@ -5,12 +5,15 @@ const stripe = require("stripe")(
   "sk_test_51KSMf0IpDm3xWv8vUHneuGJYBiet2KEaYuAkafRqr9eTMr16Reci9rRu7qpjhMt5TbNsqhPrBi4AwN1zuEswy8bD007Ep4vyCm"
 );
 
+// App Config
 const app = express();
-//Middlewares
+
+// Middlewares
 app.use(cors({ origin: true }));
 app.use(express.json());
+// API Routes
 app.get(
-  "/",
+  "/payment",
   (
     req: any,
     res: {
@@ -21,53 +24,31 @@ app.get(
       };
     }
   ) => res.status(200).send("hello world")
-),
-  app.post(
-    "/payment/create",
-    async (
-      request: {
-        body: {
-          ammount: number;
-          fullname: string;
-          address: string;
-          email: string;
-        };
-      },
-      response: {
-        status: (arg0: number) => {
-          (): any;
-          new (): any;
-          send: { (arg0: any): void; new (): any };
-          json: {
-            (arg0: { statusCode: number; message: any }): void;
-            new (): any;
-          };
-        };
-      }
-    ) => {
-      try {
-        const { ammount, fullname, address, email } = request.body;
-        const paymentIntent = await stripe.paymentIntent.create({
-          ammount,
-          fullname,
-          address,
-          email,
-          currency: "usd",
-        });
+);
 
-        response.status(200).send({
-          clientSecret: paymentIntent.client_secret,
-        });
-      } catch (err: any) {
-        response.status(404).json({
-          statusCode: 404,
-          message: err.message,
-        });
-      }
+app.post(
+  "/payment/create",
+  async (
+    request: { query: { total: number } },
+    response: {
+      status: (arg0: number) => {
+        (): any;
+        new (): any;
+        send: { (arg0: { clientSecret: string }): void; new (): any };
+      };
     }
-  );
+  ) => {
+    const total = request.query.total;
+    console.log("payment", total);
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: total,
+      currency: "usd",
+    });
+    response.status(201).send({
+      clientSecret: paymentIntent.client_secret,
+    });
+  }
+);
 
 //API routes
-
-///////////////////////////////////
 exports.api = functions.https.onRequest(app);

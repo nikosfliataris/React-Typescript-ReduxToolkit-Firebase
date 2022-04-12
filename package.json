@@ -14,6 +14,7 @@
     "@types/react": "^16.14.24",
     "@types/react-dom": "^16.9.14",
     "@types/react-redux": "^7.1.23",
+    "@types/react-stripe-elements": "^6.0.6",
     "axios": "^0.26.1",
     "firebase": "^9.6.10",
     "node-sass": "^7.0.1",

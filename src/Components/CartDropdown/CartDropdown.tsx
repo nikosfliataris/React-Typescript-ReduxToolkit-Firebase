@@ -15,11 +15,9 @@ type Total_Quantity = {
 
 function CartDropdown({}: Props) {
   const Items = useAppSelector((state: RootState) => state.Cart.cart);
-  console.log(Items[0].id);
+  console.log(Items);
 
   const hidden = useAppSelector(Hidden);
-  console.log(hidden);
-
   const history = useNavigate();
   const dispatch = useAppDispatch();
   const checkOut = (e: React.SyntheticEvent) => {
@@ -28,27 +26,27 @@ function CartDropdown({}: Props) {
     dispatch(togglehidden(hidden));
   };
   const Total_Quantity = useAppSelector((state) =>
-    state.Cart.cart.reduce(
+    state.Cart.cart?.reduce(
       (accumelatedQuantity: number, cartItem: { quantity: number }) =>
         accumelatedQuantity + cartItem.quantity,
       0
     )
   );
   const Total_Price = useAppSelector((state) =>
-    state.Cart.cart.reduce(
+    state.Cart.cart?.reduce(
       (accumelatedPrice, cartItem) =>
         accumelatedPrice + cartItem.quantity * cartItem.price,
       0
     )
   );
-  console.log(Total_Quantity, Total_Price);
+
   return (
     <div className="cart-dropdown">
       <div className="cart-items">
-        {Items.length <= 0 ? (
+        {!Items ? (
           <span className="empty">Your cart is empty</span>
         ) : (
-          Items.map((item) => (
+          Items?.map((item) => (
             <CartItem
               id={item.id}
               imageUrl={item.imageUrl}
@@ -59,10 +57,8 @@ function CartDropdown({}: Props) {
           ))
         )}
       </div>
-      {Total_Quantity === 0 ? null : (
-        <div>Total Quantity: {Total_Quantity}</div>
-      )}
-      {Total_Price === 0 ? null : <div>Total Price: {Total_Price}$</div>}
+      {!Total_Quantity ? null : <div>Total Quantity: {Total_Quantity}</div>}
+      {!Total_Price ? null : <div>Total Price: {Total_Price}$</div>}
 
       <Button
         onClick={checkOut}

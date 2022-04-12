@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAppSelector } from "../../Redux/app/hooks";
 import { SetCollection } from "../../Redux/features/Shop/ShopSlice";
@@ -9,9 +9,11 @@ function CollectionOverView() {
   const { collectionId } = useParams();
   const ItemsCollections = useAppSelector(SetCollection);
   const filter = ItemsCollections.filter(
-    (collection) =>
+    (collection: any) =>
       collection.routeName.toLowerCase() === collectionId?.toLowerCase()
   );
+  console.log(filter);
+
   return (
     <div className="collection-overview">
       <div className="title">{filter[0]?.title.toUpperCase()}</div>

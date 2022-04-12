@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import storage from "redux-persist/lib/storage";
 import { RootState } from "./../../app/store";
 export interface Props {
   hidden: boolean;
@@ -76,6 +77,9 @@ const CartSlice = createSlice({
       const index = state.cart.filter((item) => item.id !== action.payload.id);
       state.cart = index;
     },
+    clearStorage: (state, action) => {
+      localStorage.clear();
+    },
   },
 });
 
@@ -85,8 +89,8 @@ export const {
   increaseQuantity,
   decreaseQuantity,
   deleteItem,
+  clearStorage,
 } = CartSlice.actions;
 export const Hidden = (state: RootState) => state.Cart.hidden;
 export const AddItem = (state: RootState) => state.Cart.cart;
-
 export default CartSlice.reducer;

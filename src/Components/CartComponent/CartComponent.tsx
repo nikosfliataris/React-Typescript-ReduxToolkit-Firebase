@@ -12,7 +12,7 @@ function CartComponent({}: Props) {
     dispatch(togglehidden(Currenthidden));
   };
   const TotalPrice = useAppSelector((state) =>
-    state.Cart.cart.reduce(
+    state.Cart.cart?.reduce(
       (accumelatedPrice, cartItem) =>
         accumelatedPrice + cartItem.quantity * cartItem.price,
       0

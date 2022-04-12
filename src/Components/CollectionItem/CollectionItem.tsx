@@ -15,8 +15,6 @@ function CollectionItem({ id, name, price, imageUrl }: ItemProps) {
   const location = useLocation();
   const Item = useAppSelector(AddItem);
   const dispatch = useAppDispatch();
-  console.log(Item);
-
   const AddToCart = (e: React.SyntheticEvent) => {
     dispatch(addItem({ id, name, price, imageUrl, quantity: 1 }));
   };
